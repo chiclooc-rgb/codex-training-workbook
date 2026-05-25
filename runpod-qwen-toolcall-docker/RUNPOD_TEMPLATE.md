@@ -9,10 +9,11 @@ Template Name:
   qwen-toolcall-vllm
 
 Container Image:
-  <dockerhub-id>/qwen-toolcall-vllm:0.1
+  ghcr.io/chiclooc-rgb/qwen-toolcall-vllm:latest
 
 Container Registry Credentials:
-  public image면 비움
+  package가 public이면 비움
+  package가 private이면 GitHub 사용자명 + package read token 입력
 
 Container Disk:
   80 GB 이상

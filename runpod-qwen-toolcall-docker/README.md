@@ -45,7 +45,29 @@ docker run --gpus all --ipc=host \
 
 Windows PowerShell에서 경로 문제가 나면 절대경로로 바꾼다.
 
-## 3. Docker Hub 또는 GHCR에 푸시
+## 3. GitHub Actions로 GHCR 이미지 만들기
+
+이 저장소에는 GitHub Actions 워크플로가 들어 있다.
+
+```text
+.github/workflows/build-runpod-qwen-toolcall-image.yml
+```
+
+`runpod-qwen-toolcall-docker/` 폴더가 바뀌거나 수동 실행하면 GHCR 이미지가 만들어진다.
+
+```text
+ghcr.io/chiclooc-rgb/qwen-toolcall-vllm:latest
+```
+
+커밋 SHA 태그도 함께 만들어진다.
+
+```text
+ghcr.io/chiclooc-rgb/qwen-toolcall-vllm:main-<sha>
+```
+
+레포가 private이면 GHCR 패키지도 private으로 잡힐 수 있다. 이 경우 RunPod 템플릿에서 registry credentials에 GitHub 사용자명과 package read 권한이 있는 token을 넣거나, GitHub Packages 화면에서 패키지를 public으로 바꾼다.
+
+## 4. 직접 Docker Hub 또는 GHCR에 푸시
 
 예시는 Docker Hub 기준이다.
 
@@ -62,13 +84,13 @@ ghcr.io/<github-id>/qwen-toolcall-vllm:0.1
 
 RunPod 템플릿에는 이 이미지 주소를 넣는다.
 
-## 4. RunPod 템플릿 설정
+## 5. RunPod 템플릿 설정
 
 RunPod에서 Custom Pod Template을 만들 때 다음처럼 설정한다.
 
 ```text
 Container Image:
-  <dockerhub-id>/qwen-toolcall-vllm:0.1
+  ghcr.io/chiclooc-rgb/qwen-toolcall-vllm:latest
 
 Container Disk:
   80GB 이상 권장
@@ -90,7 +112,7 @@ Environment Variables:
 
 Qwen 모델이 공개 모델이면 `HF_TOKEN` 없이도 받을 수 있다. gated 모델이나 다운로드 제한이 있으면 Hugging Face 토큰을 넣는다.
 
-## 5. Pod 실행 후 확인
+## 6. Pod 실행 후 확인
 
 RunPod가 8000번 포트를 프록시로 열면 보통 다음과 비슷한 주소가 생긴다.
 
@@ -120,7 +142,7 @@ python examples/test_toolcall.py
 - 인자에 `city`가 들어간다.
 - `content`에 툴콜 JSON만 덩그러니 찍히지 않는다.
 
-## 6. 파서가 안 맞을 때
+## 7. 파서가 안 맞을 때
 
 증상:
 
@@ -138,7 +160,7 @@ TOOL_CALL_PARSER=hermes
 
 모델 종류와 vLLM 버전에 따라 맞는 파서가 달라질 수 있다. Qwen3 계열은 vLLM 문서 기준 `qwen3_xml` 플래그가 있고, 일부 사용자 경험에서는 `qwen3_coder`나 `hermes`가 더 나은 조합으로 보고되기도 했다.
 
-## 7. 테스트가 끝나면
+## 8. 테스트가 끝나면
 
 RunPod Pod는 켜져 있으면 과금된다.
 
